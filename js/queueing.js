@@ -11,6 +11,7 @@ void setup() {
 var lambda = .1;
 var mu = .1;
 var carInitPosition = 0;
+var stationPosition = width - 40;
 
 var Car = function() {
   this.position = new PVector(carInitPosition, height/2);
@@ -37,16 +38,6 @@ CarGenerator.prototype.update = function() {
 }
 
 Car.prototype.update = function() {
-    
-    /*
-    if(this.position.x === carInitPosition) {
-    	var u = random(1);
-    	var t = Math.log(1 - u)/(-lambda);
-    	this.counter = Math.round(fr*t);
-    	this.position.x = 51;
-      //console.log(this.counter);
-    }
-    */
 
     if(this.position.x === 411) {
     	var u2 = random(1);
@@ -145,27 +136,19 @@ void mousePressed() {
 
 var cars = [];
 
-/*
-for(var i = 0; i < numCars; i++) {
-	var car = new Car();
-  car.position.y = car.position.y + random(50);
-  cars.push(car);
-}
-*/
-
 // TODO: add some jitter to the car
 
 var carGenerator = new CarGenerator();
 
-var fillStationBarX = 0;
-var fillQueueBarX = 0;
+//var fillStationBarX = 0;
+//var fillQueueBarX = 0;
 void draw () {
   background(112, 128, 144);
   // TODO: add labels for the bars
-  fill(255, 255, 255);
-  rect(411, 220, 100, 10); // a bar to show how many cars in station
-  fill(255, 255, 255);
-  rect(211, 220, 200, 10); // a bar to show the queue
+  //fill(255, 255, 255);
+  //rect(411, 220, 100, 10); // a bar to show how many cars in station
+  //fill(255, 255, 255);
+  //rect(211, 220, 200, 10); // a bar to show the queue
 
   textSize(20);
   text("Arrival Rate: " + lambda + " cars per second", 50, 250);
@@ -190,6 +173,7 @@ void draw () {
     textSize(20);
     text("Number of cars: " + cars.length, 50, 290);
 
+    /*
     if(cars[i].position.x === 411) {
       fillStationBarX = fillStationBarX + 10;
     }
@@ -214,14 +198,7 @@ void draw () {
     } else if(cars[i].inQueue) {
       continue;
     }
-
-    /*
-    if(cars[i].inQueue && cars[i].position.x === 211) {
-      if(fillStationBarX >= 100) {
-        continue;    
-      }
-    }
-    */
+  */
 
     cars[i].update();
    	//cars[i].checkEdges();

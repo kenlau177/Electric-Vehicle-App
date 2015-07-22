@@ -17,20 +17,22 @@ var mu = .1;
 var carInitPosition = 0;
 var carWidth = 30;
 var carHeight = 10;
+var stationPosition = canvasWidth - 80;
+var lenOfQueue = 0;
 
-var Car = function() {
+var Car = function(someStation) {
   this.position = new PVector(carInitPosition, canvasHeight/2);
   this.velocity = new PVector(5, 0);
-  this.r = 16;
+  //RUNNING, IN_QUEUE, IN_STATION, DEAD
   this.state = "RUNNING";
-  this.counter = 0;
-  this.counterStation = 0;
-  this.inQueue = false;
+  this.station = someStation;
+  this.plugId;
+  this.chargingTimer;
 };
 
-var CarGenerator = function() {
-  //this.position = new PVector(carInitPosition, height/2);
+var CarGenerator = function(someStation) {
   this.timer = Math.round(fr * (Math.log(1 - random(1))/(-lambda)));
+  this.station = someStation;
 }
 
 CarGenerator.prototype.update = function() {
@@ -38,22 +40,48 @@ CarGenerator.prototype.update = function() {
     this.timer--;
   } else {
     this.timer = Math.round(fr * (Math.log(1 - random(1))/(-lambda)));   
-    cars.push(new Car()); 
+    cars.push(new Car(this.station)); 
   }
 }
 
 Car.prototype.update = function() {
+  switch(this.state) {
+    case "RUNNING":
+      if (this.position.x > stationPosition - 20) {
+        var plug = this.station.addToStation();
+        this.plugId = plug;
+        this.chargingTimer = Math.round(fr * (Math.log(1 - random(1)/(-mu))));
+        if (plug >= 0) {
+          this.state = "IN_STATION";
+        } else {
+          this.state = "IN_QUEUE"
+          lenOfQueue += carWidth;
+        }
+      };
+      this.position.add(this.velocity);
+      break;
+    case "IN_STATION":
+      this.chargingTimer--;
+      this.position = this.station.plugsPos[this.plugId];
+      if (this.chargingTimer <= 0) {
+        this.state = "DEAD";
+      };
+      break;
+    default:
+      ;
+  }
+}  
 
+/*
     if(this.position.x === 411) {
     	var u2 = random(1);
     	var t2 = Math.log(1 - u2)/(-mu);
     	this.counterStation = Math.round(fr*t2);
     	this.position.x = 412;
     }
+*/
 
-    //console.log(this.position.x);
-    //console.log(this.position.y);
-	 
+/*
     if(this.position.x < 53 && this.counter > 0) {
       this.counter = this.counter - 1;
 //      console.log(this.counter);
@@ -63,12 +91,11 @@ Car.prototype.update = function() {
     } else {
       this.position.add(this.velocity);
     }
-
-    if(this.position.x > canvasWidth - 10) {
-      this.state = "DEAD";
-    }
+*/
+    //if(this.position.x > stationPosition - 20) {
+    //  this.state = "WAITING";
+    //}
     
-};
 
 Car.prototype.display = function () {
     var angle = this.velocity.heading();
@@ -96,55 +123,77 @@ Car.prototype.display = function () {
     popMatrix();
 };
 
+var Station = function() {
+  this.position = new PVector(stationPosition, canvasHeight/2);
+  this.dim = new PVector(canvasWidth/6.5, canvasHeight/1.5);
+  this.plugsId = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  this.plugsPos = this.calcPlugsPos();
+}
 
-var drawStation = function() {
-  stPosition = new PVector(canvasWidth - 80, canvasHeight/2);
-  stDim = new PVector(canvasWidth/6.5, canvasHeight/1.5);
-
-  pushMatrix();
-  rectMode(CENTER);
-  translate(stPosition.x, stPosition.y);
-  fill(105, 105, 105);
-  rect(0, 0, stDim.x, stDim.y);
-  popMatrix();
+Station.prototype.calcPlugsPos = function() {
   
-  stPlugsXPos = [-stDim.x/4.0, stDim.x/4.0];
-  stPlugsYPos = [-stDim.y/2.8, -stDim.y/5.0, 0, stDim.y/5.0, stDim.y/2.8];
+  stPlugsXPos = [-this.dim.x/4.0, this.dim.x/4.0];
+  stPlugsYPos = [-this.dim.y/2.8, -this.dim.y/5.7, 0, this.dim.y/5.7, this.dim.y/2.8];
+  plugsPos = [];
 
   for (yIdx in stPlugsYPos) {
-    for (xIdx in stPlugsXPos) {  
-      pushMatrix();
-      rectMode(CENTER);
-
-      //translate(stPosition.x + xpos, stPosition.y + ypos);
-      //console.log(stPosition.x + stPlugsXPos[xIdx]);
-      translate(stPosition.x + stPlugsXPos[xIdx], stPosition.y + stPlugsYPos[yIdx]);
-      fill(#000000);
-      rect(0, 0, carWidth + 2, carHeight + 2);
-      popMatrix();
+    for (xIdx in stPlugsXPos) {
+      plugsPos = append(plugsPos, new PVector(this.position.x + stPlugsXPos[xIdx], 
+                                              this.position.y + stPlugsYPos[yIdx]));
     }
-  } 
-
-};
-
-
-/*
-var Station = function() {
-  this.plugs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  }
+  return plugsPos;
 }
 
-Station.prototype.display = function() {
-  for (i = 0; i < this.plugs.length; i++) {
+Station.prototype.drawStation = function() {
+  pushMatrix();
+  rectMode(CENTER);
+  translate(this.position.x, this.position.y);
+  fill(105, 105, 105);
+  rect(0, 0, this.dim.x, this.dim.y);
+  popMatrix();
+  
+  for (pIdx in this.plugsPos) {
+    plugPos = this.plugsPos[pIdx];  
     pushMatrix();
     rectMode(CENTER);
-    translate()
+    translate(plugPos.x, plugPos.y);
+    fill(#000000);
+    rect(0, 0, carWidth + 4, carHeight + 4);
+    popMatrix();
+  } 
+};
 
-
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+  while(0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
   }
-
-  popMatrix();
+  return array;
 }
-*/
+
+Station.prototype.addToStation = function() {
+  var arr = [];
+  for(var i = 0; i < this.plugsId.length(); i++) {
+    arr.push(i);
+  }
+  arr = shuffle(arr);
+  for (idx in arr) {
+    if (this.plugsId[arr[idx]] === 0) {
+      this.plugsId[arr[idx]] = 1;
+      return arr[idx];
+    }
+  }
+  return -1;
+}
+
+Station.prototype.update = function() {
+
+}
 
 /*
 Car.prototype.checkEdges = function () {
@@ -182,7 +231,8 @@ var cars = [];
 
 // TODO: add some jitter to the car
 
-var carGenerator = new CarGenerator();
+var station = new Station();
+var carGenerator = new CarGenerator(station);
 
 //var fillStationBarX = 0;
 //var fillQueueBarX = 0;
@@ -194,7 +244,7 @@ void draw () {
   //fill(255, 255, 255);
   //rect(211, 220, 200, 10); // a bar to show the queue
 
-  drawStation();
+  station.drawStation();
 
   textSize(20);
   text("Arrival Rate: " + lambda + " cars per second", 50, 250);
@@ -203,9 +253,7 @@ void draw () {
   textSize(20);
   text("Number of cars: " + cars.length, 50, 290);
 
-  //carGenerator.update();
-  //console.log(cars);
-  //station.display();
+  carGenerator.update();
 
   for(var i = 0; i < cars.length; i++) { 
     textSize(20);

@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 		<link href="css/clean-blog.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 
 		<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
   	<link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -21,6 +22,7 @@
 
 	<body>
 		<script src="js/processing.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/Queue.js" type="text/javascript" charset="utf-8"></script>
 
 		<header class="intro-header" style="background-image: url('img/EV-title.png')">
 	    <div class="container">
@@ -40,72 +42,56 @@
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
         <div class="post-preview">
           <a>
-            <!--
-            <h3 class="post-subtitle">
-                Problems look mighty small from 150 miles up
-            </h3>
-          -->
+            
           </a>
-          <!--
-          <p class="post-meta">Posted by <a href="#">Start Bootstrap</a> on September 24, 2014</p>
-        -->
         </div>
-        <!--
-        <hr>
-        <div class="post-preview">
-            <a href="post.html">
-                <h2 class="post-title">
-                    I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.
-                </h2>
-            </a>
-            <p class="post-meta">Posted by <a href="#">Start Bootstrap</a> on September 18, 2014</p>
-        </div>
-        <hr>
-        <div class="post-preview">
-            <a href="post.html">
-                <h2 class="post-title">
-                    Science has not yet mastered prophecy
-                </h2>
-                <h3 class="post-subtitle">
-                    We predict too much for the next year and yet far too little for the next ten.
-                </h3>
-            </a>
-            <p class="post-meta">Posted by <a href="#">Start Bootstrap</a> on August 24, 2014</p>
-        </div>
-        <hr>
-        <div class="post-preview">
-            <a href="post.html">
-                <h2 class="post-title">
-                    Failure is not an option
-                </h2>
-                <h3 class="post-subtitle">
-                    Many say exploration is part of our destiny, but it’s actually our duty to future generations.
-                </h3>
-            </a>
-            <p class="post-meta">Posted by <a href="#">Start Bootstrap</a> on July 8, 2014</p>
-        </div>
-        <hr>
-      -->
-        <!-- Pager -->
-        <!--
-        <ul class="pager">
-            <li class="next">
-                <a href="#">Older Posts &rarr;</a>
-            </li>
-        </ul>
-      -->
       </div>
     </div>
   </div>
 
   <hr>
 
-
-		<center>
-      <canvas width="800" height="600" data-processing-sources="js/queueing.js"></canvas>
+  <div class="row">
+    <center>
+      <div class="container" style="display: inline-block; width: 40%">
+        <h5>Car Arrival Rate <span>(in cars per second)</span>: </h5>
+        <div class="input-group spinner lambda">
+          <input Content-Type="text" class="form-control" value="1.0">
+          <div class="input-group-btn-vertical">
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-up"></i>
+            </button>
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-down"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="container" style="display: inline-block; width: 40%">
+        <h5>Charging Rate <span>(in cars per second)</span>: </h5>
+        <div class="input-group spinner mu">
+          <input type="text" class="form-control" value="0.001">
+          <div class="input-group-btn-vertical">
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-up"></i>
+            </button>
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-down"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </center>
-	</body>
+  </div>
 
+  <br>
+
+	<center>
+    <canvas width="800" height="600" data-processing-sources="js/queueing.js">
+    </canvas>
+  </center>
+
+	</body>
 </html> 
 
 

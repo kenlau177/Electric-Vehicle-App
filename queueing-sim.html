@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang = "en">
+	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>Electric Vehicle Queueing Simulation</title>
+    
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+		<link href="css/clean-blog.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+		<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  	<link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+	</head>
+
+	<body>
+		<script src="js/processing.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/Queue.js" type="text/javascript" charset="utf-8"></script>
+
+		<header class="intro-header" style="background-image: url('img/EV-title.png')">
+	    <div class="container">
+	      <div class="row">
+	        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+	          <div class="site-heading">
+	            <h1>Electric Vehicle Queuing Simulation</h1>
+	            <span class="subheading">A visualiztion app to model electric vehicle traffic intensity.</span>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+  	</header>
+
+		<div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-preview" style="font-size: 18px">
+          <h4>Ken Lau</h4>
+          <h4>Data Scientist</h4>
+          <p>
+            Cars arrive and move from the left part of the visualization to the right until they reach the station depicted by a gray rectangle with 10 charging locations shown in black-filled rectangles. When a car finishes charging, the car is immediately removed from the visualization.
+          </p>
+          <p>
+            The time a car arrives is exponential distributed based on the car arrival rate parameter shown by the numeric spinner. Similarly, the time a car charges per station is exponentially distributed based on the charging rate parameter.
+          </p>
+          <p>
+            Although the car arrival and charging rates are in seconds, a more realistic scenario would be the same value but in hours.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row">
+    <center>
+      <div class="container" style="display: inline-block; width: 40%">
+        <h5>Car Arrival Rate <span>(in cars per second)</span>: </h5>
+        <div class="input-group spinner lambda">
+          <input Content-Type="text" class="form-control" value="1.0">
+          <div class="input-group-btn-vertical">
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-up"></i>
+            </button>
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-down"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="container" style="display: inline-block; width: 40%">
+        <h5>Charging Rate <span>(in cars per second)</span>: </h5>
+        <div class="input-group spinner mu">
+          <input type="text" class="form-control" value="0.001">
+          <div class="input-group-btn-vertical">
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-up"></i>
+            </button>
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-down"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </center>
+  </div>
+
+  <br>
+
+	<center>
+    <canvas width="800" height="600" data-processing-sources="js/queueing.js">
+    </canvas>
+  </center>
+
+	</body>
+</html> 
+
+
+
+
+
+

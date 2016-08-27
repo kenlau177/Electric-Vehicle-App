@@ -24,6 +24,19 @@
 		<script src="js/processing.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/Queue.js" type="text/javascript" charset="utf-8"></script>
 
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          processEscapes: true
+        }
+      });
+    </script>
+
+    <script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
 		<header class="intro-header" style="background-image: url('img/EV-title.png')">
 	    <div class="container">
 	      <div class="row">
@@ -43,28 +56,34 @@
         <div class="post-preview" style="font-size: 18px">
           <h4>Ken Lau</h4>
           <h4>Data Scientist</h4>
+          <a style="color:#4c4cff; font-style: italic;" href="https://kenlau177.github.io">Visit my website</a>
+          <!--GOAL-->
           <p>
-            Cars arrive and move from the left part of the visualization to the right until they reach the station depicted by a gray rectangle with 10 charging locations shown in black-filled rectangles. When a car finishes charging, the car is immediately removed from the visualization.
+            As cars enter the station, they are placed at one of the 10 charging locations shown as black rectangles. If the charging locations are all full, incoming cars begin to form a queue. Cars are removed when charging is complete.
           </p>
           <p>
-            The time a car arrives is exponential distributed based on the car arrival rate parameter shown by the numeric spinner. Similarly, the time a car charges per station is exponentially distributed based on the charging rate parameter.
+            The number of cars that arrive is poisson distributed with paramter $\lambda$ (average number of cars per hour). In other words, $$\mathbf{Cars\ Arrive}\sim\mathcal{P}(\lambda).$$
           </p>
           <p>
-            Although the car arrival and charging rates are in seconds, a more realistic scenario would be the same value but in hours.
+            The time a car charges per station is exponentially distributed with parameter $\mu$ (Number of cars charged per hour for a single station). In other words, $$\mathbf{Time\ Charge}\sim\mathsf{Exp}(\mu).$$
+          </p>
+          <p>
+            The average wait time in the queue can be computed with $\rho=\frac{\lambda}{\mu}$ and $s=10$ charging stations as follows:
+            $$\mathbf{Wait\ Time\ =\ }\left[\left(\frac{1}{\mu(s-\rho)}\right)\left(\frac{\rho^{s}}{s!}\right)\left(\frac{s}{s-\rho}\right)\middle/\left(\frac{s\rho^{s}}{(s!)(s-\rho)}+\sum_{i=0}^{s-1}\frac{\rho^{i}}{i!}\right) \right] $$
+            Variation of the equation can be found in <a href="https://en.wikipedia.org/wiki/M/M/c_queue">Wikipedia's page on M/M/c</a>. Some algebra manipulation is required.
           </p>
         </div>
       </div>
     </div>
   </div>
-
   <hr>
 
   <div class="row">
     <center>
       <div class="container" style="display: inline-block; width: 40%">
-        <h5>Car Arrival Rate <span>(in cars per second)</span>: </h5>
+        <h5>Car Arrival Rate ($\lambda$) <span>(cars per hour)</span>: </h5>
         <div class="input-group spinner lambda">
-          <input Content-Type="text" class="form-control" value="1.0">
+          <input Content-Type="text" class="form-control" value="10">
           <div class="input-group-btn-vertical">
             <button class="btn btn-default" type="button">
               <i class="fa fa-caret-up"></i>
@@ -76,9 +95,9 @@
         </div>
       </div>
       <div class="container" style="display: inline-block; width: 40%">
-        <h5>Charging Rate <span>(in cars per second)</span>: </h5>
+        <h5>Charging Rate ($\mu$) <span>(cars per hour per station)</span>: </h5>
         <div class="input-group spinner mu">
-          <input type="text" class="form-control" value="0.001">
+          <input type="text" class="form-control" value="1.5">
           <div class="input-group-btn-vertical">
             <button class="btn btn-default" type="button">
               <i class="fa fa-caret-up"></i>
@@ -89,10 +108,10 @@
           </div>
         </div>
       </div>
+      <p id="speed_up_label"></p>
+      <p id="wait_time_label"></p>
     </center>
   </div>
-
-  <br>
 
 	<center>
     <canvas width="800" height="600" data-processing-sources="js/queueing.js">

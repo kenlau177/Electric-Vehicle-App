@@ -54,7 +54,7 @@ function compute_wait_time(lambda, mu, s) {
   }
   denom = denom + (s*Math.pow(rho,s))/((factorial(s)*(s-rho)));
 
-  if (!isFinite(numer) || !isFinite(denom)) {
+  if (!isFinite(numer) || !isFinite(denom) || denom < 0) {
     return(Infinity);
   }
 

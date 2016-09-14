@@ -10,8 +10,6 @@ void setup() {
 
 // global variables for number queue and in station
 
-//TODO: cars should be random colors
-
 lambda = Number($('.spinner.lambda input').val()); //Number of cars per second
 mu = Number($('.spinner.mu input').val()); //Number of cars per second per station
 var carInitPosition = 0;
@@ -19,11 +17,16 @@ var carWidth = 30;
 var carHeight = 10;
 var stationPosition = canvasWidth - 80;
 var sizeOfQueue = 0;
+var numStations = Number($('.spinner.s input').val());
+var minStations = 1;
+var maxStations = 15;
 var speedFrac = 3600/300;
 font = loadFont("meta-bold.ttf");
 colors = [#e41a1c, #3232ff, #4daf4a, #984ea3, #ff7f00, #ffff33, #a65628, #f781bf];
 
 $('#speed_up_label').text("This simulation is sped up by " + 3600*(1/speedFrac) + " times to account for the hour denom.");
+
+// TODO: wait time label
 
 function factorial(num)
 {
@@ -61,6 +64,10 @@ function compute_wait_time(lambda, mu, s) {
   return(numer/denom);
 }
 
+function build_wait_time_label(wait_time) {
+  
+}
+
 (function ($) {
   $('.spinner.lambda .btn:first-of-type').on('click', function() {
     lambda = parseFloat($('.spinner.lambda input').val(), 10) + 1;
@@ -91,7 +98,39 @@ function compute_wait_time(lambda, mu, s) {
   });
 })(jQuery);
 
-var Car = function(someStation, someQueue) {
+(function ($) {
+  $('.spinner.s .btn:first-of-type').on('click', function() {
+    if (parseInt($('.spinner.s input').val()) < maxStations) {
+      numStations = parseInt($('.spinner.s input').val()) + 1;  
+    } else {
+      return;
+    }
+    $('.spinner.s input').val( numStations );
+    station = new Station();
+    carGenerator = new CarGenerator(station);
+    cars = [];
+    sizeOfQueue = 0;
+    var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
+    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+  });
+  $('.spinner.s .btn:last-of-type').on('click', function() {
+    if (parseInt($('.spinner.s input').val()) > minStations) {
+      numStations = parseInt($('.spinner.s input').val()) - 1;  
+    } else {
+      return;
+    }
+    numStations = parseInt($('.spinner.s input').val()) - 1;
+    $('.spinner.s input').val( numStations );
+    station = new Station();
+    carGenerator = new CarGenerator(station);
+    cars = [];
+    sizeOfQueue = 0;
+    var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
+    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+  });
+})(jQuery);
+
+var Car = function(someStation) {
   this.position = new PVector(carInitPosition, canvasHeight/2);
   this.velocity = new PVector(20, 0);
   //RUNNING, IN_QUEUE, IN_STATION, DEAD
@@ -194,16 +233,31 @@ Car.prototype.display = function () {
 
 var Station = function() {
   this.position = new PVector(stationPosition, canvasHeight/2);
-  this.dim = new PVector(canvasWidth/6.5, canvasHeight/1.5);
-  this.plugsId = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  if (numStations <= 5) {
+    dimX = canvasWidth/(6.5*2);
+    this.position.x = this.position.x + 20;
+  } else if (numStations >= 6 && numStations <= 10) {
+    dimX = canvasWidth/6.5;
+  } else {
+    dimX = 1.3*(canvasWidth/6.5);
+  }
+
+  this.dim = new PVector(dimX, canvasHeight/1.5);
+  this.plugsId = Array.apply(null, Array(numStations)).map(Number.prototype.valueOf,0);
   this.plugsPos = this.calcPlugsPos();
 }
 
 Station.prototype.calcPlugsPos = function() {
-  
-  stPlugsXPos = [-this.dim.x/4.0, this.dim.x/4.0];
+  if (numStations <= 5) {
+    stPlugsXPos = [0];
+  } else if (numStations >= 6 && numStations <= 10) {
+    stPlugsXPos = [-this.dim.x/4.0, this.dim.x/4.0];
+  } else {
+    stPlugsXPos = [-this.dim.x/3.5, 0, this.dim.x/3.5];
+  }
+
   stPlugsYPos = [-this.dim.y/2.8, -this.dim.y/5.7, 0, this.dim.y/5.7, this.dim.y/2.8];
-  plugsPos = [];
+  var plugsPos = [];
 
   for (yIdx in stPlugsYPos) {
     for (xIdx in stPlugsXPos) {
@@ -211,6 +265,8 @@ Station.prototype.calcPlugsPos = function() {
                                               this.position.y + stPlugsYPos[yIdx]));
     }
   }
+  plugsPos = plugsPos.slice(0, numStations);
+
   return plugsPos;
 }
 
@@ -267,10 +323,8 @@ Station.prototype.addToStation = function() {
 
 var cars = [];
 
-// TODO: add some jitter to the car
-
 station = new Station();
-var carGenerator = new CarGenerator(station);
+carGenerator = new CarGenerator(station);
 
 var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
 $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");

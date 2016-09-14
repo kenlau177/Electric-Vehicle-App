@@ -80,8 +80,8 @@
 
   <div class="row">
     <center>
-      <div class="container" style="display: inline-block; width: 40%">
-        <h5>Car Arrival Rate ($\lambda$) <span>(cars per hour)</span>: </h5>
+      <div class="container" style="display: inline-block; width: 25%">
+        <h5>Car Arrival Rate ($\lambda$)<br><span>(cars per hour)</span>: </h5>
         <div class="input-group spinner lambda">
           <input Content-Type="text" class="form-control" value="10">
           <div class="input-group-btn-vertical">
@@ -94,10 +94,24 @@
           </div>
         </div>
       </div>
-      <div class="container" style="display: inline-block; width: 40%">
-        <h5>Charging Rate ($\mu$) <span>(cars per hour per station)</span>: </h5>
+      <div class="container" style="display: inline-block; width: 25%">
+        <h5>Charging Rate ($\mu$)<br><span>(cars per hour per station)</span>: </h5>
         <div class="input-group spinner mu">
           <input type="text" class="form-control" value="1.5">
+          <div class="input-group-btn-vertical">
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-up"></i>
+            </button>
+            <button class="btn btn-default" type="button">
+              <i class="fa fa-caret-down"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="container" style="display: inline-block; width: 25%">
+        <h5>Number of Stations</span>: </h5>
+        <div class="input-group spinner s">
+          <input type="text" class="form-control input-number" value="10" data-min="1" data-max="15">
           <div class="input-group-btn-vertical">
             <button class="btn btn-default" type="button">
               <i class="fa fa-caret-up"></i>

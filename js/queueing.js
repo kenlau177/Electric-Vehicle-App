@@ -65,7 +65,12 @@ function compute_wait_time(lambda, mu, s) {
 }
 
 function build_wait_time_label(wait_time) {
-  
+  if (!isFinite(wait_time)) {
+    return "Infinite time";
+  }
+  var hours = Math.floor(wait_time);
+  var minutes = Math.round((wait_time - hours)*60);
+  return hours.toString() + " hour(s) " + minutes.toString() + " minute(s)";
 }
 
 (function ($) {
@@ -73,13 +78,13 @@ function build_wait_time_label(wait_time) {
     lambda = parseFloat($('.spinner.lambda input').val(), 10) + 1;
     $('.spinner.lambda input').val( lambda );
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
-    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+    $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
   $('.spinner.lambda .btn:last-of-type').on('click', function() {
     lambda = parseFloat($('.spinner.lambda input').val(), 10) - 1;
     $('.spinner.lambda input').val( lambda );
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
-    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+    $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
 })(jQuery);
 
@@ -88,13 +93,13 @@ function build_wait_time_label(wait_time) {
     mu = parseFloat($('.spinner.mu input').val(), 10) + .25;
     $('.spinner.mu input').val( mu );
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
-    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+    $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
   $('.spinner.mu .btn:last-of-type').on('click', function() {
     mu = parseFloat($('.spinner.mu input').val(), 10) - .25;
     $('.spinner.mu input').val( mu );
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
-    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+    $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
 })(jQuery);
 
@@ -111,7 +116,7 @@ function build_wait_time_label(wait_time) {
     cars = [];
     sizeOfQueue = 0;
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
-    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+    $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
   $('.spinner.s .btn:last-of-type').on('click', function() {
     if (parseInt($('.spinner.s input').val()) > minStations) {
@@ -126,7 +131,7 @@ function build_wait_time_label(wait_time) {
     cars = [];
     sizeOfQueue = 0;
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
-    $('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+    $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
 })(jQuery);
 
@@ -327,7 +332,7 @@ station = new Station();
 carGenerator = new CarGenerator(station);
 
 var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
-$('#wait_time_label').text("Average wait time: " + wait_time + " hour(s)");
+$('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
 
 void draw () {
   background(112, 128, 144);

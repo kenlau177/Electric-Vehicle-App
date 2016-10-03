@@ -59,7 +59,10 @@
           <a style="color:#4c4cff; font-style: italic;" href="https://kenlau177.github.io">Visit my website</a>
           <!--GOAL-->
           <p>
-            As cars enter the station, they are placed at one of the 10 charging locations shown as black rectangles. If the charging locations are all full, incoming cars begin to form a queue. Cars are removed when charging is complete.
+            The motivation for this simulation is based on a statistical consulting project involving the operation of electric vehicles at UBC. The report can be found <a style="color:#4c4cff;" href="https://github.com/kenlau177/Electric-Vehicle-App/blob/master/report.pdf">here</a>.
+          </p>
+          <p>
+            As cars enter the station, they are placed at one of the charging locations shown as black rectangles in the canvas. If the charging locations are all full, incoming cars begin to form a queue. Cars are removed when charging is complete.
           </p>
           <p>
             The number of cars that arrive is poisson distributed with paramter $\lambda$ (average number of cars per hour). In other words, $$\mathbf{Cars\ Arrive}\sim\mathcal{P}(\lambda).$$
@@ -131,6 +134,8 @@
     <canvas width="800" height="600" data-processing-sources="js/queueing.js">
     </canvas>
   </center>
+
+  
 
   <footer>
   </footer>

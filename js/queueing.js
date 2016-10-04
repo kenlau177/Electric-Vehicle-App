@@ -18,13 +18,20 @@ var carHeight = 10;
 var stationPosition = canvasWidth - 80;
 var sizeOfQueue = 0;
 var numStations = Number($('.spinner.s input').val());
+
+var maxLambda = 25;
+var minLambda = 1;
+var maxMu = 8;
+var minMu = .25;
 var minStations = 1;
 var maxStations = 15;
+
 var speedFrac = 3600/300;
 font = loadFont("meta-bold.ttf");
 colors = [#e41a1c, #3232ff, #4daf4a, #984ea3, #ff7f00, #ffff33, #a65628, #f781bf];
 
 $('#speed_up_label').text("This simulation is sped up by " + 3600*(1/speedFrac) + " times to account for the hour denom.");
+$('#charge_time_label').text('Or, charging time of 1/mu=' + (1/mu).toFixed(2) + ' hr(s)');
 
 // TODO: wait time label
 
@@ -75,13 +82,21 @@ function build_wait_time_label(wait_time) {
 
 (function ($) {
   $('.spinner.lambda .btn:first-of-type').on('click', function() {
-    lambda = parseFloat($('.spinner.lambda input').val(), 10) + 1;
+    if (parseFloat($('.spinner.lambda input').val()) < maxLambda) {
+      lambda = parseFloat($('.spinner.lambda input').val(), 10) + .25;  
+    } else {
+      return;
+    }
     $('.spinner.lambda input').val( lambda );
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
     $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
   $('.spinner.lambda .btn:last-of-type').on('click', function() {
-    lambda = parseFloat($('.spinner.lambda input').val(), 10) - 1;
+    if (parseFloat($('.spinner.lambda input').val()) > minLambda) {
+      lambda = parseFloat($('.spinner.lambda input').val(), 10) - .25;  
+    } else {
+      return;
+    }
     $('.spinner.lambda input').val( lambda );
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
     $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
@@ -90,14 +105,24 @@ function build_wait_time_label(wait_time) {
 
 (function ($) {
   $('.spinner.mu .btn:first-of-type').on('click', function() {
-    mu = parseFloat($('.spinner.mu input').val(), 10) + .25;
+    if (parseFloat($('.spinner.mu input').val()) < maxMu) {
+      mu = parseFloat($('.spinner.mu input').val(), 10) + .25;  
+    } else {
+      return;
+    }
     $('.spinner.mu input').val( mu );
+    $('#charge_time_label').text('Or, charging time of ' + (1/mu).toFixed(2) + ' hr(s)');
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
     $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
   $('.spinner.mu .btn:last-of-type').on('click', function() {
-    mu = parseFloat($('.spinner.mu input').val(), 10) - .25;
+    if (parseFloat($('.spinner.mu input').val()) > minMu) {
+      mu = parseFloat($('.spinner.mu input').val(), 10) - .25;  
+    } else {
+      return;
+    }
     $('.spinner.mu input').val( mu );
+    $('#charge_time_label').text('Or, charging time of ' + (1/mu).toFixed(2) + ' hr(s)');
     var wait_time = compute_wait_time(lambda, mu, station.plugsId.length).toFixed(2);
     $('#wait_time_label').text("Average wait time: " + build_wait_time_label(wait_time));
   });
@@ -368,3 +393,62 @@ void draw () {
 
 };
 
+lambda_arr = [2, 6, 10, 14, 18, 22, 25];
+mu_arr = [.5, 1.25, 3, 6];
+stations_arr = [2, 4, 6, 8, 10, 12, 15];
+
+function create_graph(lambda_arr, stations_arr, in_mu, id) {
+  var columns = [['Number of stations'].concat(stations_arr)];
+  for (l in lambda_arr) {
+    var data_l = ['lmda=' + lambda_arr[l].toString()];
+    for (s in stations_arr) {
+      var wait_time = compute_wait_time(lambda_arr[l], in_mu, stations_arr[s]);
+      if (!isFinite(wait_time) || wait_time*60 > 1000) {
+        wait_time = 180;
+      } else {
+        wait_time = Math.round(wait_time*60);  
+      }
+      data_l.push(wait_time);
+    }
+    columns.push(data_l);
+  }
+  var chart = c3.generate({
+    bindto: id,
+    data: {
+      x: 'Number of stations',
+      columns: columns
+    },
+    axis: {
+      x: {
+        label: {
+          text: 'Number of stations',
+          position: 'outer-center'
+        } 
+      }, 
+      y: {
+        label: {
+          text: 'Wait time in minutes',
+          position: 'outer-middle'
+        }
+      }
+    },
+    grid: {
+      x: {
+          show: true
+      },
+      y: {
+          show: true
+      }
+    },
+    tooltip: {
+      format: {
+        title: function(d) { return 'Num stations = ' + d; }
+      }
+    }
+  });
+}
+
+create_graph(lambda_arr, stations_arr, mu_arr[0], '#chart1_1');
+create_graph(lambda_arr, stations_arr, mu_arr[1], '#chart1_2');
+create_graph(lambda_arr, stations_arr, mu_arr[2], '#chart2_1');
+create_graph(lambda_arr, stations_arr, mu_arr[3], '#chart2_2');

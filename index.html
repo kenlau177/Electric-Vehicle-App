@@ -18,6 +18,11 @@
   	<link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 	  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
+    <!-- C3 for lambda/mu and stations vs wait times -->
+    <script src="js/c3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.1/d3.min.js"></script>
+    <link href="css/c3.min.css" rel="stylesheet"></link>
+
 	</head>
 
 	<body>
@@ -51,94 +56,132 @@
   	</header>
 
 		<div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <div class="post-preview" style="font-size: 18px">
-          <h4>Ken Lau</h4>
-          <h4>Data Scientist</h4>
-          <a style="color:#4c4cff; font-style: italic;" href="https://kenlau177.github.io">Visit my website</a>
-          <!--GOAL-->
-          <p>
-            The motivation for this simulation is based on a statistical consulting project involving the operation of electric vehicles at UBC. The report can be found <a style="color:#4c4cff;" href="https://github.com/kenlau177/Electric-Vehicle-App/blob/master/report.pdf">here</a>.
-          </p>
-          <p>
-            As cars enter the station, they are placed at one of the charging locations shown as black rectangles in the canvas. If the charging locations are all full, incoming cars begin to form a queue. Cars are removed when charging is complete.
-          </p>
-          <p>
-            The number of cars that arrive is poisson distributed with paramter $\lambda$ (average number of cars per hour). In other words, $$\mathbf{Cars\ Arrive}\sim\mathcal{P}(\lambda).$$
-          </p>
-          <p>
-            The time a car charges per station is exponentially distributed with parameter $\mu$ (Number of cars charged per hour for a single station). In other words, $$\mathbf{Time\ Charge}\sim\mathsf{Exp}(\mu).$$
-          </p>
-          <p>
-            The average wait time in the queue can be computed with $\rho=\frac{\lambda}{\mu}$ and $s=10$ charging stations as follows:
-            $$\mathbf{Wait\ Time\ =\ }\left[\left(\frac{1}{\mu(s-\rho)}\right)\left(\frac{\rho^{s}}{s!}\right)\left(\frac{s}{s-\rho}\right)\middle/\left(\frac{s\rho^{s}}{(s!)(s-\rho)}+\sum_{i=0}^{s-1}\frac{\rho^{i}}{i!}\right) \right] $$
-            Variation of the equation can be found in <a href="https://en.wikipedia.org/wiki/M/M/c_queue">Wikipedia's page on M/M/c</a>. Some algebra manipulation is required.
-          </p>
+      <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+          <div class="post-preview" style="font-size: 18px">
+            <h4>Ken Lau</h4>
+            <h4>Data Scientist</h4>
+            <a style="color:#4c4cff; font-style: italic;" href="https://kenlau177.github.io">My website</a>
+            <br>
+            <a style="color:#4c4cff;" href="https://github.com/kenlau177/Electric-Vehicle-App/">Project repo</a>
+            <!--GOAL-->
+            <p>
+              We like to determine the wait times based on car arrival and charging rate, and display a simulation for demonstration purposes.
+            </p>
+
+            <p>
+              The motivation to design this simulation is obtained from a statistical consulting project involving the operation of electric vehicles at UBC. The report can be found <a style="color:#4c4cff;" href="https://github.com/kenlau177/Electric-Vehicle-App/blob/master/report.pdf">here</a>.
+            </p>
+            <p>
+              As cars enter the station, they are placed at one of the charging locations shown as black rectangles in the canvas. If the charging locations are all full, incoming cars begin to form a queue. Cars are removed when charging is complete.
+            </p>
+            <p>
+              The number of cars that arrive is poisson distributed with paramter $\lambda$ (average number of cars per hour). In other words, $$\mathbf{Cars\ Arrive}\sim\mathcal{P}(\lambda).$$
+            </p>
+            <p>
+              The time a car charges per station is exponentially distributed with parameter $\mu$ (Number of cars charged per hour for a single station). In other words, $$\mathbf{Time\ Charge}\sim\mathsf{Exp}(\mu).$$
+            </p>
+            <p>
+              The average wait time in the queue can be computed with $\rho=\frac{\lambda}{\mu}$ and $s=10$ charging stations as follows:
+              $$\mathbf{Wait\ Time\ =\ }\left[\left(\frac{1}{\mu(s-\rho)}\right)\left(\frac{\rho^{s}}{s!}\right)\left(\frac{s}{s-\rho}\right)\middle/\left(\frac{s\rho^{s}}{(s!)(s-\rho)}+\sum_{i=0}^{s-1}\frac{\rho^{i}}{i!}\right) \right] $$
+              Variation of the equation can be found in <a href="https://en.wikipedia.org/wiki/M/M/c_queue">Wikipedia's page on M/M/c</a>. Some algebra manipulation is required.
+            </p>
+          
+            <hr>
+
+            <div class="row">
+                <div class="col-md-4 container" style="display: inline-block;">
+                  <h5>Car Arrival Rate ($\lambda$)<br><span>(cars per hour)</span>: </h5>
+                  <div class="input-group spinner lambda">
+                    <input Content-Type="text" class="form-control" value="10">
+                    <div class="input-group-btn-vertical">
+                      <button class="btn btn-default" type="button">
+                        <i class="fa fa-caret-up"></i>
+                      </button>
+                      <button class="btn btn-default" type="button">
+                        <i class="fa fa-caret-down"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 container" style="display: inline-block;">
+                  <h5>Charging Rate ($\mu$)<br><span>(cars per hour per station)</span>: </h5>
+                  <div class="input-group spinner mu">
+                    <input type="text" class="form-control" value="1.5">
+                    <div class="input-group-btn-vertical">
+                      <button class="btn btn-default" type="button">
+                        <i class="fa fa-caret-up"></i>
+                      </button>
+                      <button class="btn btn-default" type="button">
+                        <i class="fa fa-caret-down"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div style="margin:0px; font-size:12px;" id="charge_time_label"></div>
+                </div>
+                <div class="col-md-4 container" style="display: inline-block;">
+                  <h5>Number of Stations</span>: </h5>
+                  <div class="input-group spinner s">
+                    <input type="text" class="form-control input-number" value="10" data-min="1" data-max="15">
+                    <div class="input-group-btn-vertical">
+                      <button class="btn btn-default" type="button">
+                        <i class="fa fa-caret-up"></i>
+                      </button>
+                      <button class="btn btn-default" type="button">
+                        <i class="fa fa-caret-down"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="row">
+              <center><p id="speed_up_label"></p></center>
+              <center><p id="wait_time_label"></p></center>
+            </div>
+
+            <center>
+              <canvas width="800" height="600" data-processing-sources="js/queueing.js">
+              </canvas>
+            </center>
+
+            <p>The following are interaction plots of wait times based on number of stations, car arrival and charging rates. The max wait time is defaulted to 180 minutes.
+            </p>
+
+            <p>For example, if the charging rate is 1.25 cars per hour and number of cars arriving is 6 per hour as shown as the orange line in the top right graph, we would want the number of stations to be roughly greater than 6-8 to ensure the wait times are not too long.
+            </p>
+
+            <div class="row">
+              <div class="col-md-6">
+                <center><h4>Car charging rate (mu)=.5</h4></center>
+                <div id="chart1_1"></div>
+              </div>
+              <div class="col-md-6">
+                <center><h4>Car charging rate (mu)=1.25</h4></center>
+                <div id="chart1_2"></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <center><h4>Car charging rate (mu)=3</h4></center>
+                <div id="chart2_1"></div>
+              </div>
+              <div class="col-md-6">
+                <center><h4>Car charging rate (mu)=6</h4></center>
+                <div id="chart2_2"></div>
+              </div>
+            </div>
+
+
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <hr>
+    
 
-  <div class="row">
-    <center>
-      <div class="container" style="display: inline-block; width: 25%">
-        <h5>Car Arrival Rate ($\lambda$)<br><span>(cars per hour)</span>: </h5>
-        <div class="input-group spinner lambda">
-          <input Content-Type="text" class="form-control" value="10">
-          <div class="input-group-btn-vertical">
-            <button class="btn btn-default" type="button">
-              <i class="fa fa-caret-up"></i>
-            </button>
-            <button class="btn btn-default" type="button">
-              <i class="fa fa-caret-down"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="container" style="display: inline-block; width: 25%">
-        <h5>Charging Rate ($\mu$)<br><span>(cars per hour per station)</span>: </h5>
-        <div class="input-group spinner mu">
-          <input type="text" class="form-control" value="1.5">
-          <div class="input-group-btn-vertical">
-            <button class="btn btn-default" type="button">
-              <i class="fa fa-caret-up"></i>
-            </button>
-            <button class="btn btn-default" type="button">
-              <i class="fa fa-caret-down"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="container" style="display: inline-block; width: 25%">
-        <h5>Number of Stations</span>: </h5>
-        <div class="input-group spinner s">
-          <input type="text" class="form-control input-number" value="10" data-min="1" data-max="15">
-          <div class="input-group-btn-vertical">
-            <button class="btn btn-default" type="button">
-              <i class="fa fa-caret-up"></i>
-            </button>
-            <button class="btn btn-default" type="button">
-              <i class="fa fa-caret-down"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <p id="speed_up_label"></p>
-      <p id="wait_time_label"></p>
-    </center>
-  </div>
 
-	<center>
-    <canvas width="800" height="600" data-processing-sources="js/queueing.js">
-    </canvas>
-  </center>
-
-  
-
-  <footer>
-  </footer>
+    <footer>
+    </footer>
 
 	</body>
 </html> 

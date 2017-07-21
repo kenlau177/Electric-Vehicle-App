@@ -130,7 +130,7 @@ convertStatsDfHrToMin = function(statsDf) {
 # Plot out each individual statistics as a function of the total number of cars in operation.
 plotStats = function(statsDf) {
 	
-	ggdat1 = select(statsDf, n, queueLength, carsInSystem, stationsIdle, 
+	ggdat1 = select(statsDf, additional_cars, queueLength, carsInSystem, stationsIdle, 
 									probWait)
 	ggdat1 = melt(ggdat1, measure.vars=c("queueLength","carsInSystem", 
 																			 "stationsIdle", "probWait"))
@@ -139,28 +139,32 @@ plotStats = function(statsDf) {
 						"stationsIdle"="Number of stations idle", 
 						"probWait"="Probability car enters queue on arrival")
 	ggdat1$variable = revalue(ggdat1$variable, hash1)
-	gg1 = ggplot(ggdat1, aes(x=n,y=value)) + geom_line() + 
+	gg1 = ggplot(ggdat1, aes(x=additional_cars,y=value)) + geom_line() + 
 		facet_wrap(~variable, ncol=2, nrow=2, scales="free") + 
-		xlab("Total number of cars") + 
+		xlab("Additional Cars") + 
 		scale_x_continuous(breaks=
-											 	pretty_breaks(n=round(max(statsDf$n-statsDf$s)/2))) + 
+											 	pretty_breaks(n=10)) + 
 		scale_y_continuous(breaks=pretty_breaks(n=8)) + 
-		theme(axis.title.y=element_blank())
+		theme(axis.title.y=element_blank(), axis.title=element_text(size=17),
+		      axis.text=element_text(size=16), 
+		      strip.text.x = element_text(size=16))
 	
-	ggdat2 = select(statsDf, n, serviceTime, queueWaitTime, overallWaitTime)
+	ggdat2 = select(statsDf, additional_cars, serviceTime, queueWaitTime, overallWaitTime)
 	ggdat2 = melt(ggdat2, measure.vars=c("serviceTime","queueWaitTime",
 																			 "overallWaitTime"))
 	hash2 = c("serviceTime"="Service time", 
 						"queueWaitTime"="Queue wait time", 
 						"overallWaitTime"="Total wait time")
 	ggdat2$variable = revalue(ggdat2$variable, hash2)
-	gg2 = ggplot(ggdat2, aes(x=n,y=value)) + geom_line() + 
+	gg2 = ggplot(ggdat2, aes(x=additional_cars,y=value)) + geom_line() + 
 		facet_wrap(~variable, ncol=2, nrow=2, scales="free") + 
-		xlab("Total number of cars") + ylab("Minutes") + 
+		xlab("Additional Cars") + ylab("Hours") + 
 		scale_x_continuous(breaks=
-					 	pretty_breaks(n=round(max(statsDf$n-statsDf$s)/2))) + 
+					 	pretty_breaks(n=10)) + 
 		scale_y_continuous(breaks=pretty_breaks(n=8)) + 
-		theme(axis.title.y=element_blank())
+	  theme(axis.title.y=element_blank(), axis.title=element_text(size=17),
+	        axis.text=element_text(size=16), strip.text.x = element_text(size=16))
+		
 	
 	return(list("gg1"=gg1, "gg2"=gg2))	
 }

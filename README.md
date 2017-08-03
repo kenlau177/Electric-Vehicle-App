@@ -4,3 +4,4 @@ As part of UBC’s goal to reduce GHG emissions, UBC is committed to promoting t
 
 Although I cannot share publicly the full report, data, or code, I obtained permissions to show parts of the report and most of the code focusing mostly on the methodology. In addition, I have created a simulation in javascript and processing depicting the traffic intensity of vehicles. See here: [http://kenlau177.github.io/Electric-Vehicle-App/](http://kenlau177.github.io/Electric-Vehicle-App/)
 
+f
